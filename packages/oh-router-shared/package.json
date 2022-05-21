@@ -1,0 +1,33 @@
+{
+  "name": "oh-router-shared",
+  "version": "0.0.3",
+  "files": [
+    "dist"
+  ],
+  "main": "./src/index.ts",
+  "publishConfig": {
+    "types": "./dist/index.d.ts",
+    "main": "./dist/oh-router-shared.umd.js",
+    "module": "./dist/oh-router-shared.es.js",
+    "exports": {
+      ".": {
+        "import": "./dist/oh-router-shared.es.js",
+        "require": "./dist/oh-router-shared.umd.js"
+      }
+    }
+  },
+  "scripts": {
+    "dev": "tsc && vite build -w",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "history": "^5.3.0",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.5",
+    "vite-plugin-dts": "^1.1.0"
+  },
+  "repository": "lblblong/oh-router",
+  "homepage": "https://github.com/lblblong/oh-router"
+}
