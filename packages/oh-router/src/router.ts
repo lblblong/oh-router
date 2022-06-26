@@ -145,15 +145,18 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
     this.event.remove('onLocationChange', listener)
   }
 
+  rematch() {
+    if (this.lastHistoryUpdate) {
+      this.onHistoryLocationChange(this.lastHistoryUpdate, true)
+    }
+  }
+
   /**
    * Re -configure the routes, which will immediately trigger the routing matching
    * @param routes The new routes
    */
   setRoutes(routes: RouteObject<M>[]) {
     this.routes = routes
-    if (this.lastHistoryUpdate) {
-      this.onHistoryLocationChange(this.lastHistoryUpdate, true)
-    }
     return this
   }
 
