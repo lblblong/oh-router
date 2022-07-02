@@ -12,7 +12,7 @@ export interface MiddlewareContext<M extends RouteMeta = {}> {
 }
 
 export abstract class Middleware<M extends RouteMeta = {}> {
-  register(_: MiddlewareContext<M>) {
+  register(ctx: MiddlewareContext<M>) {
     return true
   }
 
