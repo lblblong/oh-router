@@ -33,6 +33,7 @@ export interface RouteObject<M extends RouteMeta = {}> extends _RouteObject {
   children?: RouteObject<M>[]
   index?: boolean
   path?: string
+  name?: string
   redirect?: string
   meta?: M
 }
