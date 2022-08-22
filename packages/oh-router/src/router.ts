@@ -5,6 +5,7 @@ import {
   joinPaths,
   matchRoutes,
   Params,
+  resolveTo,
   RouteMatch,
   RouteMeta,
   RouteObject,
@@ -69,6 +70,7 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
     }
 
     this.lastHistoryUpdate = update
+
     let trailingPathname = stripBasename(
       update.location.pathname,
       this.basename
@@ -78,15 +80,7 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
       return
     }
 
-    const matchedRoutes:
-      | (RouteMatch<string, M> & { params: Params<string> })[]
-      | undefined = matchRoutes(this.routes, {
-      pathname: trailingPathname,
-    })?.map((match) =>
-      Object.assign({}, match, {
-        params: Object.assign({}, match.params),
-      })
-    )
+    const matchedRoutes = this.matchRoutes(trailingPathname)
 
     if (isNil(matchedRoutes)) return
 
@@ -98,7 +92,12 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
     }
 
     const location: RouteLocation<M> = {
-      ...update.location,
+      pathname: trailingPathname,
+      search: update.location.search,
+      hash: update.location.hash,
+      state: update.location.state,
+      key: update.location.key,
+      action: update.action,
       matched: matchedRoutes,
       meta: matchedRoutes.reduce(
         (pre, cur) => Object.assign(pre, cur.route.meta),
@@ -108,7 +107,6 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
         {},
         matchedRoutes[matchedRoutes.length - 1]?.params
       ),
-      action: update.action,
     }
 
     const ctx: MiddlewareContext<M> = {
@@ -120,13 +118,32 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
       ...this.middlewares,
       {
         handler: async ({ to }) => {
-          if (this.lastHistoryUpdate!.location.pathname !== to.pathname) return
+          const lastUpdatePathname = stripBasename(
+            this.lastHistoryUpdate!.location.pathname,
+            this.basename
+          )
+
+          if (lastUpdatePathname !== to.pathname) return
           this.location = to as RouteLocation<M>
           this.event.emit('onLocationChange', to)
         },
         register: () => true,
       },
     ])
+  }
+
+  private matchRoutes(pathname: string) {
+    const matchedRoutes:
+      | (RouteMatch<string, M> & { params: Params<string> })[]
+      | undefined = matchRoutes(this.routes, {
+      pathname,
+    })?.map((match) =>
+      Object.assign({}, match, {
+        params: Object.assign({}, match.params),
+      })
+    )
+
+    return matchedRoutes
   }
 
   /**
@@ -183,8 +200,31 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
     if (typeof to === 'number') {
       this.history.go(to)
     } else {
+      let trailingPathname = stripBasename(
+        this.history.location.pathname,
+        this.basename
+      )
+
+      if (trailingPathname == null) {
+        return
+      }
+
+      let matchedRoutes =
+        this.location?.matched ?? this.matchRoutes(trailingPathname)
+
+      if (isNil(matchedRoutes)) return
+
+      let path = resolveTo(
+        to,
+        matchedRoutes.map((match) => match.pathnameBase),
+        trailingPathname
+      )
+
+      if (this.basename !== '/') {
+        path.pathname = joinPaths([this.basename, path.pathname])
+      }
+
       const _navigate = opts?.replace ? this.history.replace : this.history.push
-      const path = joinPaths([this.basename, to as string])
       _navigate(path)
     }
   }
