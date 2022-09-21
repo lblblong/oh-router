@@ -195,6 +195,7 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
     opts?: {
       /** Replace current location */
       replace?: boolean
+      state?: any
     }
   ) {
     if (typeof to === 'number') {
@@ -225,7 +226,7 @@ export class Router<M extends RouteMeta = {}> extends RouterMiddleware<M> {
       }
 
       const _navigate = opts?.replace ? this.history.replace : this.history.push
-      _navigate(path)
+      _navigate(path, opts?.state)
     }
   }
 
