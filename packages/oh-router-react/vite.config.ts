@@ -7,14 +7,16 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   plugins: [
     dts({
-      insertTypesEntry: true
+      insertTypesEntry: true,
     }),
     react(),
   ],
   build: {
     lib: {
+      fileName: 'index',
+      name: 'OhRouterReact',
       entry: path.resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖

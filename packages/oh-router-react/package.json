@@ -1,18 +1,19 @@
 {
   "name": "oh-router-react",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "files": [
     "dist"
   ],
+  "type": "module",
   "main": "./src/index.ts",
   "publishConfig": {
     "types": "./dist/index.d.ts",
-    "main": "./dist/oh-router-react.umd.js",
-    "module": "./dist/oh-router-react.es.js",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
     "exports": {
       ".": {
-        "import": "./dist/oh-router-react.es.js",
-        "require": "./dist/oh-router-react.umd.js"
+        "import": "./dist/index.js",
+        "require": "./dist/index.umd.cjs"
       }
     }
   },
@@ -33,13 +34,13 @@
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@vitejs/plugin-react": "^1.3.0",
+    "@vitejs/plugin-react": "^4.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "typescript": "^4.6.3",
     "oh-router": "workspace:^",
-    "vite": "^2.9.5",
-    "vite-plugin-dts": "^1.1.0"
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.6.0"
   },
   "repository": "lblblong/oh-router",
   "homepage": "https://github.com/lblblong/oh-router"

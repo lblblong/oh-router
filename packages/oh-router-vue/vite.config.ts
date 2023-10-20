@@ -9,8 +9,10 @@ export default defineConfig({
   plugins: [vue(), jsx(), dts()],
   build: {
     lib: {
+      fileName: 'index',
+      name: 'OhRouterVue',
       entry: path.resolve(__dirname, 'src/index.ts'),
-      formats: ['es'],
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖

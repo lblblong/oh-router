@@ -1,18 +1,19 @@
 {
   "name": "oh-router-vue",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "files": [
     "dist"
   ],
+  "type": "module",
   "main": "./src/index.ts",
   "publishConfig": {
-    "types": "./dist/oh-router-vue/src/index.d.ts",
-    "main": "./dist/oh-router-vue.umd.js",
-    "module": "./dist/oh-router-vue.es.js",
+    "types": "./dist/index.d.ts",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
     "exports": {
       ".": {
-        "import": "./dist/oh-router-vue.es.js",
-        "require": "./dist/oh-router-vue.umd.js"
+        "import": "./dist/index.js",
+        "require": "./dist/index.umd.cjs"
       }
     }
   },
@@ -30,13 +31,13 @@
     "oh-router-shared": "workspace:^"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.3.1",
+    "@vitejs/plugin-vue": "^4.3.4",
     "@vitejs/plugin-vue-jsx": "^1.3.10",
     "@vue/runtime-core": "^3.2.33",
     "typescript": "^4.5.4",
     "oh-router": "workspace:^",
-    "vite": "^2.9.5",
-    "vite-plugin-dts": "^1.1.0",
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.6.0",
     "vue": "^3.2.33",
     "vue-tsc": "^0.34.7"
   },

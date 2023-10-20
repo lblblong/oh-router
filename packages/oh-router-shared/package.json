@@ -1,18 +1,19 @@
 {
   "name": "oh-router-shared",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "files": [
     "dist"
   ],
+  "type": "module",
   "main": "./src/index.ts",
   "publishConfig": {
     "types": "./dist/index.d.ts",
-    "main": "./dist/oh-router-shared.umd.js",
-    "module": "./dist/oh-router-shared.es.js",
+    "main": "./dist/index.umd.cjs",
+    "module": "./dist/index.js",
     "exports": {
       ".": {
-        "import": "./dist/oh-router-shared.es.js",
-        "require": "./dist/oh-router-shared.umd.js"
+        "import": "./dist/index.js",
+        "require": "./dist/index.umd.cjs"
       }
     }
   },
@@ -25,8 +26,8 @@
     "@types/react": "^18.0.0",
     "history": "^5.3.0",
     "typescript": "^4.5.4",
-    "vite": "^2.9.5",
-    "vite-plugin-dts": "^1.1.0"
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.6.0"
   },
   "repository": "lblblong/oh-router",
   "homepage": "https://github.com/lblblong/oh-router"
