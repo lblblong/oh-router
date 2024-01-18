@@ -1,6 +1,6 @@
 {
-  "name": "oh-router-react",
-  "version": "0.0.11",
+  "name": "oh-router-helper",
+  "version": "0.0.1",
   "files": [
     "dist"
   ],
@@ -23,18 +23,7 @@
     "preview": "vite preview",
     "prepublishOnly": "tsc && vite build"
   },
-  "peerDependencies": {
-    "history": ">=5.3.0",
-    "react": ">=16",
-    "react-dom": ">=16",
-    "oh-router": ">=0.3.1"
-  },
-  "dependencies": {
-    "oh-router-shared": "workspace:*"
-  },
-  "devDependencies": {
-    "oh-router": "workspace:*"
-  },
+  "devDependencies": {},
   "repository": "lblblong/oh-router",
   "homepage": "https://github.com/lblblong/oh-router"
 }
