@@ -6,6 +6,7 @@ import { LocationContext, RouteContext, RouterContext } from '../context'
 export interface RouterViewProps<M extends RouteMeta = {}> {
   router: Router<M>
   splash?: React.ReactNode
+  children?: React.ReactNode
 }
 
 /**
@@ -15,6 +16,7 @@ export interface RouterViewProps<M extends RouteMeta = {}> {
 export function RouterView<M extends RouteMeta = {}>({
   router,
   splash,
+  children,
 }: RouterViewProps<M>): React.ReactElement | null {
   const [location, setLocation] = useState<RouteLocation<M>>()
 
@@ -45,6 +47,7 @@ export function RouterView<M extends RouteMeta = {}>({
             />
           )
         }, null as React.ReactElement | null)}
+        {children}
       </LocationContext.Provider>
     </RouterContext.Provider>
   )
