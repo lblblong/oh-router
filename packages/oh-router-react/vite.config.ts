@@ -14,13 +14,12 @@ export default defineConfig({
   build: {
     lib: {
       fileName: 'index',
-      name: 'OhRouterReact',
       entry: path.resolve(__dirname, 'src/index.ts'),
-      formats: ['es', 'umd'],
+      formats: ['es'],
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['react', 'history', 'oh-router', 'oh-router-shared'],
+      external: ['react', 'react/jsx-runtime', '@tanstack/react-router'],
     },
   },
 })

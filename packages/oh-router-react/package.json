@@ -1,6 +1,6 @@
 {
   "name": "oh-router-react",
-  "version": "0.0.15",
+  "version": "0.1.0",
   "files": [
     "dist"
   ],
@@ -8,12 +8,10 @@
   "main": "./src/index.ts",
   "publishConfig": {
     "types": "./dist/index.d.ts",
-    "main": "./dist/index.umd.cjs",
     "module": "./dist/index.js",
     "exports": {
       ".": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.umd.cjs"
+        "import": "./dist/index.js"
       }
     }
   },
@@ -24,17 +22,13 @@
     "prepublishOnly": "tsc && vite build"
   },
   "peerDependencies": {
-    "history": ">=5.3.0",
     "react": ">=16",
-    "react-dom": ">=16",
-    "oh-router": ">=0.3.1"
+    "react-dom": ">=16"
   },
   "dependencies": {
-    "oh-router-shared": "workspace:*"
+    "@tanstack/react-router": "^1.121.27"
   },
-  "devDependencies": {
-    "oh-router": "workspace:*"
-  },
+  "devDependencies": {},
   "repository": "lblblong/oh-router",
   "homepage": "https://github.com/lblblong/oh-router"
 }
