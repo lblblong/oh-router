@@ -1,164 +1,206 @@
-# oh-router
+# oh-router-react
 
-Router is an important part of front-end development. The mainstream framework has official or community provided router support, such as [vue-router](https://router.vuejs.org/index.html) and [react-router](https://reactrouter.com/), but they are deeply bound to the framework. oh-router wants to decouple the core capability of routing from the framework so that a consistent API can be used across different frameworks
+一个基于 [@tanstack/react-router](https://tanstack.com/router) 的轻量级 React 路由库，提供中间件支持和导航取消功能。
 
-Feature:
+## 特性
 
-- Middleware out of the box
-- `route match` and `hooks` consistent with the react-router usage experience
-  - `route matching` and `hooks` are based directly on react-router v6
-- Support Vue and React
+- 🚀 基于 TanStack Router，性能优异
+- 🛠️ 内置中间件系统，支持路由守卫和预处理
+- ❌ 导航取消功能，灵活控制路由跳转
+- 🔧 TypeScript 支持，类型安全
 
-## Install & Use
+## 安装
 
-### Use in React
-
-Installation from NPM
-
-```shell
-$ npm install --save oh-router oh-router-react
+```bash
+npm install oh-router-react
+# 或
+yarn add oh-router-react
+# 或
+pnpm add oh-router-react
 ```
 
-Below is the most basic use case that combines React：[Open in StackBlitz](https://stackblitz.com/edit/oh-router-react-base)
+## 对等依赖
 
-```tsx | pure
-import { Router } from 'oh-router'
-import { RouterView, Link } from 'oh-router-react'
-import ReactDOM from 'react-dom/client'
+确保你的项目中已安装以下对等依赖：
 
-const router = new Router({
+- `react >= 16`
+- `react-dom >= 16`
+
+## 快速开始
+
+```tsx
+import { createRouter, createRootRoute, createRoute } from 'oh-router-react'
+
+const rootRoute = createRootRoute({
+  component: () => <div>Hello World!</div>,
+})
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/',
+  component: () => <div>Index</div>,
+})
+
+const routeTree = rootRoute.addChildren([indexRoute])
+
+const router = createRouter({
+  routeTree,
+})
+
+export default router
+```
+
+## 路由配置
+
+使用自定义的 `createRouter` 函数配置路由：
+
+```tsx
+import { createRouter } from 'oh-router-react'
+
+const router = createRouter({
   routes: [
     {
       path: '/',
-      element: () => (
-        <div>
-          <div>Home</div>
-          <Link to="/about">to About</Link>
-        </div>
-      ),
+      component: () => <div>Home</div>,
     },
     {
       path: '/about',
-      element: () => (
-        <div>
-          <div>About</div>
-          <Link to="/">to Home</Link>
-        </div>
-      ),
+      component: () => <div>About</div>,
+    },
+    {
+      path: '/user/$id',
+      component: () => <div>User</div>,
     },
   ],
 })
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <RouterView router={router} />
-)
 ```
 
-### Use in Vue
+### 嵌套路由
 
-Installation from NPM
-
-```shell
-$ npm install --save oh-router oh-router-vue
-```
-
-Below is the most basic use case that combines Vue：[Open in StackBlitz](https://stackblitz.com/edit/oh-router-vue-base)
-
-```html
-<div id="app">
-  <router-view />
-</div>
-
-<script>
-  import { Router } from 'oh-router'
-  import { installForVue } from 'oh-router-vue'
-  import { createApp } from 'vue'
-
-  const router = new Router({
-    routes: [
-      {
-        path: '/',
-        element: {
-          template: `<div>
-          <div>Home</div>
-          <router-link to="/about">to About</router-link>
-        </div`,
+```tsx
+const router = createRouter({
+  routes: [
+    {
+      path: '/',
+      component: () => <div>Home</div>,
+      children: [
+        {
+          path: 'dashboard',
+          component: () => <div>Dashboard</div>,
         },
-      },
-      {
-        path: '/about',
-        element: {
-          template: `<div>
-          <div>About</div>
-          <router-link to="/">to Home</router-link>
-        </div`,
+        {
+          path: 'settings',
+          component: () => <div>Settings</div>,
         },
-      },
-    ],
-  })
-
-  const app = createApp({})
-  app.use(installForVue(router))
-  app.mount('#app')
-</script>
+      ],
+    },
+  ],
+})
 ```
 
-### Use in Vanilla
+### 懒加载路由
 
-[Open in StackBlitz](https://stackblitz.com/edit/oh-router-vanilla-basic)
+```tsx
+const router = createRouter({
+  routes: [
+    {
+      path: '/lazy',
+      lazy: () => import('./LazyComponent'),
+    },
+  ],
+})
+```
 
-```ts | pure
-import Router from 'oh-router'
+## 中间件
 
-const app = document.querySelector<HTMLDivElement>('#app')!
+中间件允许你在路由加载前执行逻辑，如身份验证、权限检查等。
 
-const routes = [
-  {
-    path: '/',
-    element: `<div>Home</div>
-    <div>
-      <button onclick="to('/libs')">libs</button>
-      <button onclick="to('/languages')">languages</button>
-    </div>`,
-    children: [
-      {
-        path: '/libs',
-        element: `<ul>
-          <li onclick="to('/libs/react')"><button>React</button></li>
-          <li onclick="to('/libs/vue')"><button>Vue</button></li>
-        <ul/>`,
-      },
-      {
-        path: '/libs/:name',
-        element: `Lib: `,
-        name: 'lib-detail',
-      },
-      {
-        path: '/languages',
-        element: `<ul><li>Java</li><li>Go</li><ul/>`,
-      },
-    ],
-  },
-  {
-    path: '*',
-    element: '404',
-  },
-]
+```tsx
+import { Middleware } from 'oh-router-react'
 
-const router = new Router({ routes })
-  .addLocationListener((location) => {
-    let content = location.matched.map(({ route }) => route.element).join('\n')
-    const lastRoute = location.matched[location.matched.length - 1]
+class AuthMiddleware extends Middleware {
+  register(ctx) {
+    // 返回 true 表示此中间件适用于当前路由
+    return ctx.to.pathname.startsWith('/protected')
+  }
 
-    if (lastRoute.route.name === 'lib-detail') {
-      content += lastRoute.params.name
+  async handle(ctx) {
+    const isAuthenticated = checkAuth()
+    if (!isAuthenticated) {
+      throw redirect('/login')
     }
+  }
+}
 
-    app.innerHTML = content
-  })
-  .start()
+const router = createRouter({
+  routes: [...],
+  middlewares: [new AuthMiddleware()],
+})
+```
 
-window.to = function to(path: string) {
-  router.navigate(path)
+## 导航取消
+
+使用 `cancel` 函数取消当前导航：
+
+```tsx
+import { cancel } from 'oh-router-react'
+
+class SomeMiddleware extends Middleware {
+  async handle(ctx) {
+    if (someCondition) {
+      cancel() // 取消导航
+    }
+  }
 }
 ```
+
+## API 参考
+
+### createRouter(options)
+
+创建路由器实例。
+
+**参数：**
+
+- `routes`: `IRoute[]` - 路由配置数组
+- `middlewares`: `Middleware[]` - 中间件数组
+- 其他选项继承自 TanStack Router 的 `RouterOptions`
+
+**返回值：** Router 实例
+
+### IRoute
+
+路由配置接口。
+
+```tsx
+type IRoute<T = any> = {
+  meta?: T
+  children?: IRoute<T>[]
+} & ({ path: string } | { id: string }) &
+  ({ component: () => ReactNode } | { lazy: () => Promise<ILazyRoute<T>> })
+```
+
+### Middleware
+
+中间件抽象类。
+
+```tsx
+abstract class Middleware<M extends {}> {
+  register(ctx: MiddlewareContext<M>): boolean
+  abstract handle(ctx: MiddlewareContext<M>): Promise<void>
+}
+```
+
+### cancel()
+
+取消当前导航。
+
+**返回值：** `CancelError` 实例
+
+## 示例
+
+查看 [`examples/react-*`](../examples/) 目录中的完整示例。
+
+## 许可证
+
+MIT

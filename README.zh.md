@@ -1,166 +1,159 @@
-[English](./README.md) | 简体中文
-
 # oh-router
 
-路由一直是前端开发的重要组成部分，主流框架都有官方或社区的提供的路由支持，比如 [vue-router](https://router.vuejs.org/zh/index.html) 和 [react-router](https://reactrouter.com/)，但它们都与框架深度绑定而无法共用。oh-router 将核心功能与框架解绑，以此在不同的框架之间提供一致的 API 接口。
+使用相同的路由器 API 在 Vue 和 React 中
 
-特性：
+[![npm version](https://img.shields.io/npm/v/oh-router.svg)](https://www.npmjs.com/package/oh-router)
+[![npm downloads](https://img.shields.io/npm/dm/oh-router.svg)](https://www.npmjs.com/package/oh-router)
 
-- 开箱即用的路由中间件功能
-- 与 react-router 使用体验一致的 `路由匹配` 和 `hooks`
-  - `路由匹配` 和 `hooks` 直接基于 react-router v6
-- 支持 Vue 和 React
+## 特性
 
-## 安装和使用
+- 🚀 轻量级路由库
+- 🔄 支持 React 和 Vue
+- 🛠️ 基于 history API
+- 🔧 支持中间件
+- 📦 支持嵌套路由
+- 🎯 TypeScript 支持
 
-### 在 React 中使用
+## 安装
 
-安装依赖
+### 核心包
 
-```shell
-$ npm install --save oh-router oh-router-react
+```bash
+npm install oh-router
 ```
 
-下面是一个结合 React 最基本的使用案例：[在 StackBlitz 中打开](https://stackblitz.com/edit/oh-router-react-base)
+### React 支持
 
-```tsx | pure
+```bash
+npm install oh-router oh-router-react
+```
+
+### Vue 支持
+
+```bash
+npm install oh-router oh-router-vue
+```
+
+## 在 React 中使用
+
+```tsx
 import { Router } from 'oh-router'
 import { RouterView, Link } from 'oh-router-react'
-import ReactDOM from 'react-dom/client'
 
 const router = new Router({
   routes: [
     {
       path: '/',
-      element: () => (
-        <div>
-          <div>Home</div>
-          <Link to="/about">to About</Link>
-        </div>
-      ),
+      element: () => <div>Home</div>,
     },
     {
       path: '/about',
-      element: () => (
-        <div>
-          <div>About</div>
-          <Link to="/">to Home</Link>
-        </div>
-      ),
+      element: () => <div>About</div>,
     },
   ],
 })
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <RouterView router={router} />
-)
-```
-
-### 在 Vue 中使用
-
-安装依赖
-
-```shell
-$ npm install --save oh-router oh-router-vue
-```
-
-下面是一个结合 Vue 最基本的使用案例：[在 StackBlitz 中打开](https://stackblitz.com/edit/oh-router-vue-base)
-
-```html
-<div id="app">
-  <router-view />
-</div>
-
-<script>
-  import { Router } from 'oh-router'
-  import { installForVue } from 'oh-router-vue'
-  import { createApp } from 'vue'
-
-  const router = new Router({
-    routes: [
-      {
-        path: '/',
-        element: {
-          template: `<div>
-          <div>Home</div>
-          <router-link to="/about">to About</router-link>
-        </div`,
-        },
-      },
-      {
-        path: '/about',
-        element: {
-          template: `<div>
-          <div>About</div>
-          <router-link to="/">to Home</router-link>
-        </div`,
-        },
-      },
-    ],
-  })
-
-  const app = createApp({})
-  app.use(installForVue(router))
-  app.mount('#app')
-</script>
-```
-
-### 不在框架中使用
-
-[在 StackBlitz 中打开](https://stackblitz.com/edit/oh-router-vanilla-basic)
-
-```ts | pure
-import Router from 'oh-router'
-
-const app = document.querySelector<HTMLDivElement>('#app')!
-
-const routes = [
-  {
-    path: '/',
-    element: `<div>Home</div>
-    <div>
-      <button onclick="to('/libs')">libs</button>
-      <button onclick="to('/languages')">languages</button>
-    </div>`,
-    children: [
-      {
-        path: '/libs',
-        element: `<ul>
-          <li onclick="to('/libs/react')"><button>React</button></li>
-          <li onclick="to('/libs/vue')"><button>Vue</button></li>
-        <ul/>`,
-      },
-      {
-        path: '/libs/:name',
-        element: `Lib: `,
-        name: 'lib-detail',
-      },
-      {
-        path: '/languages',
-        element: `<ul><li>Java</li><li>Go</li><ul/>`,
-      },
-    ],
-  },
-  {
-    path: '*',
-    element: '404',
-  },
-]
-
-const router = new Router({ routes })
-  .addLocationListener((location) => {
-    let content = location.matched.map(({ route }) => route.element).join('\n')
-    const lastRoute = location.matched[location.matched.length - 1]
-
-    if (lastRoute.route.name === 'lib-detail') {
-      content += lastRoute.params.name
-    }
-
-    app.innerHTML = content
-  })
-  .start()
-
-window.to = function to(path: string) {
-  router.navigate(path)
+function App() {
+  return <RouterView router={router} />
 }
 ```
+
+## 在 Vue 中使用
+
+```typescript
+import { createApp } from 'vue'
+import { Router } from 'oh-router'
+import { installForVue } from 'oh-router-vue'
+
+const router = new Router({
+  routes: [
+    {
+      path: '/',
+      element: HomeComponent,
+    },
+    {
+      path: '/about',
+      element: AboutComponent,
+    },
+  ],
+})
+
+const app = createApp(App)
+app.use(installForVue(router))
+```
+
+## 中间件
+
+oh-router 支持中间件，用于路由守卫、权限检查等。
+
+### 定义中间件
+
+```typescript
+import { Middleware } from 'oh-router'
+
+class AuthMiddleware extends Middleware {
+  register(ctx) {
+    // 返回 true 表示此中间件适用于当前路由
+    return ctx.to.pathname.startsWith('/protected')
+  }
+
+  async handler(ctx, next) {
+    // 检查用户是否已登录
+    const isLoggedIn = checkUserLoggedIn()
+    if (!isLoggedIn) {
+      // 重定向到登录页
+      ctx.router.navigate('/login')
+      throw new Error('Unauthorized')
+    }
+    await next()
+  }
+}
+```
+
+### 使用中间件
+
+```typescript
+const router = new Router({
+  routes: [...],
+  middlewares: [new AuthMiddleware()]
+})
+```
+
+## 文档
+
+详细文档请查看：[https://lblblong.github.io/oh-router/](https://lblblong.github.io/oh-router/)
+
+## 例子
+
+查看 `examples/` 目录中的完整示例：
+
+- `react-basic` - React 基础使用
+- `vue-basic` - Vue 基础使用
+- `react-nested-routes` - React 嵌套路由
+- `vue-nested-routes` - Vue 嵌套路由
+- `react-middlewares` - React 中间件使用
+- `vue-middlewares` - Vue 中间件使用
+
+## 开发
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动文档开发服务器
+pnpm dev
+
+# 构建所有包
+pnpm build
+
+# 清理构建文件
+pnpm clean
+```
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 许可证
+
+MIT
