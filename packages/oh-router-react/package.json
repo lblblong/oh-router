@@ -1,5 +1,5 @@
 {
-  "name": "oh-router-react",
+  "name": "tanstack-router-middleware",
   "version": "0.1.0",
   "files": [
     "dist"
@@ -15,11 +15,10 @@
   },
   "peerDependencies": {
     "react": ">=16",
-    "react-dom": ">=16"
-  },
-  "dependencies": {
+    "react-dom": ">=16",
     "@tanstack/react-router": "^1.139.14"
   },
+  "dependencies": {},
   "devDependencies": {},
   "repository": "lblblong/oh-router",
   "homepage": "https://github.com/lblblong/oh-router"

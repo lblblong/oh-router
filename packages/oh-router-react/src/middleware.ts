@@ -1,14 +1,15 @@
+// middleware.ts 推荐写法
 import type {
-  AnyContext,
-  BeforeLoadContextOptions,
   ParsedLocation,
 } from '@tanstack/react-router'
 
-export interface MiddlewareContext<M extends {}>
-  extends BeforeLoadContextOptions<any, undefined, {}, M, AnyContext> {
+// 不再去 extends 那个不稳定的 BeforeLoadContextOptions
+export interface MiddlewareContext<M extends {}> {
   to: ParsedLocation
   from?: ParsedLocation
   meta: M
+  // 允许访问 context 上的其他属性（比如 router, params 等）
+  [key: string]: any 
 }
 
 export abstract class Middleware<M extends {}> {
