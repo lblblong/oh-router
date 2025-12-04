@@ -5,28 +5,20 @@
     "dist"
   ],
   "type": "module",
-  "main": "./src/index.ts",
-  "publishConfig": {
-    "types": "./dist/index.d.ts",
-    "module": "./dist/index.js",
-    "exports": {
-      ".": {
-        "import": "./dist/index.js"
-      }
-    }
-  },
+  "main": "dist/index.mjs",
+  "typings": "dist/index.d.mts",
+  "module": "dist/index.mjs",
   "scripts": {
-    "dev": "tsc && vite build -w",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "prepublishOnly": "tsc && vite build"
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "prepublishOnly": "tsdown"
   },
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.121.27"
+    "@tanstack/react-router": "^1.139.14"
   },
   "devDependencies": {},
   "repository": "lblblong/oh-router",
