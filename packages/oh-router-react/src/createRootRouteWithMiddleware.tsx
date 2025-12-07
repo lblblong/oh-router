@@ -3,7 +3,6 @@ import {
   Outlet,
   redirect,
   type ParsedLocation,
-  type AnyContext,
 } from '@tanstack/react-router'
 import React from 'react'
 import { CancelError } from './cancel'
@@ -18,6 +17,14 @@ type CreateRootRouteOptions<TContext extends {}> = {
   component?: () => React.ReactNode
   context?: TContext | RootRouteContextFn<TContext>
   [key: string]: any
+}
+
+async function getContextValue(context: any, ctx?: any) {
+  if (typeof context === 'function') {
+    return await context(ctx)
+  } else {
+    return context
+  }
 }
 
 export function createRootRouteWithMiddleware<TContext extends {}>(
@@ -54,39 +61,20 @@ export function createRootRouteWithMiddleware<TContext extends {}>(
 
       // 3. 处理 Root Route 定义的 context (对象或函数)
       if (rootContextDefinition) {
-        let rootMeta: AnyContext = {}
-        
-        if (typeof rootContextDefinition === 'function') {
-          // 如果是函数，执行它，并将当前上下文 ctx 传进去
-          // 支持异步 context 函数
-          rootMeta = await (rootContextDefinition as RootRouteContextFn<TContext>)(ctx)
-        } else {
-          // 如果是静态对象
-          rootMeta = rootContextDefinition
-        }
+        const rootMeta = await getContextValue(rootContextDefinition, ctx)
 
-        // 合并 Root Route 的 Meta
         if (rootMeta && typeof rootMeta === 'object') {
           Object.assign(meta, rootMeta)
         }
       }
 
       // 4. 处理子路由的 context (通过 matchRoutes)
-      const router = (ctx as any).router
-      if (router) {
-        const matches = router.matchRoutes(ctx.location)
-
-        matches.forEach((match: any) => {
-          const routeContext = match.route?.options?.context
-
-          // 注意：子路由的 context 如果是函数，在 Root beforeLoad 阶段通常无法正确执行
-          // 因为子路由的 parseParams 等可能还没运行。
-          // 所以这里我们主要支持子路由的静态对象 Context。
-          if (routeContext && typeof routeContext === 'object') {
-            Object.assign(meta, routeContext)
-          }
-        })
+      for (let i = ctx.matches.length - 1; i >= 0; i--) {
+        const match = ctx.matches[i]
+        const context = await getContextValue(match.context, ctx)
+        if (context) Object.assign(meta, context)
       }
+
       // --- Meta 合并逻辑结束 ---
 
       const _ctx: MiddlewareContext<TContext> = {
@@ -108,12 +96,12 @@ export function createRootRouteWithMiddleware<TContext extends {}>(
           if (err instanceof CancelError) {
             const targetPath = lastLocation?.pathname || defaultCancelPath
             const targetSearch = lastLocation?.search || {}
-            
+
             if (ctx.location.pathname !== targetPath) {
-              throw redirect({ 
-                to: targetPath, 
+              throw redirect({
+                to: targetPath,
                 search: targetSearch,
-                replace: true 
+                replace: true,
               })
             }
             return
